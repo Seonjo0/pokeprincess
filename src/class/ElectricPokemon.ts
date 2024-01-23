@@ -8,7 +8,7 @@ export class ElectricPokemon extends Pokemon{
         // this.hp = this.hp + 100;
     }
 
-    public specialAttack() {
+    public specialAttack(): void{
         console.log(`${this.name}의 백만볼트!`)
         this.attack();
         this.dmg += 2;

@@ -11,33 +11,65 @@ export class Pokemon {
 
     constructor(name: string, type: pokeType) {
         this.name = name;
+        this.fightLog = {
+            win: 0,
+            lose: 0,
+        }
     }
 
-    public attack() {
-        this.dmg = Math.round((Math.random())*5)
+    attack(): void{
+        this.dmg = Math.round((Math.random())*5) + 1
     }
 
-    public specialAttack(){
+    specialAttack(): void{
 
     }
 
-    public defend(){
-        this.shield = Math.round((Math.random())*3)
+    defend(): void{
+        this.shield = Math.round((Math.random())*3) + 1
     }
 
-    public hide(){
+    hide(): void{
         if(Math.random() > 0.5){
             this.hideStatus = true
         }
     }
 
-    public runaway(){
+    runaway(): void{
         if(Math.random() > 0.9){
             this.runStatus = true
         }
     }
 
-    public die() {
-        // this.fightLog.lose = this.fightLog.lose + 1;
+    attacked(dmg: number): void{
+        if(this.shield == 0){
+            this.hp -= dmg
+        } else {
+            if (dmg - this.shield > 0) {
+                this.hp -= (dmg - this.shield);
+            } else {
+              return;
+            }
+        }
+        console.log(`${this.name} 의 hp ==> ${this.hp}`)
+    }
+
+    die(): void{
+        this.fightLog.lose += 1;
+    }
+
+    win(): void {
+        this.fightLog.win += 1
+    }
+
+    getLog(): number[]{
+        return [this.fightLog.win, this.fightLog.lose]
+    }
+
+    initialized(): void{
+        this.dmg = 0;
+        this.shield = 0;
+        this.hideStatus = false;
+        this.runStatus = false;
     }
 }

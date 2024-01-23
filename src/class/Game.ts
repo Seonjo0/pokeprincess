@@ -5,9 +5,8 @@ import { Battle } from "./Battle";
 
 export class Game {
     private battleManager: Battle = new Battle();
-    
-    
-    constructor() {
+
+    constructor(){
         document.getElementById("startGame").onclick = () => {
             this.setup()
         }
@@ -33,11 +32,11 @@ export class Game {
         }
     }
 
-    public play(){
+    public play(): void{
         document.getElementById("battleprompt").innerHTML = "행동을 선택하세요."
     }
 
-    public setup() {
+    public setup(): void{
         console.log("게임이 시작되었습니다.");
         document.getElementById("ispoke").innerHTML = "플레이할 포켓몬을 골라주세요."
 
@@ -51,7 +50,7 @@ export class Game {
         kkobubtn.onclick = () => {this.createPokemon(2)}
     }
 
-    public createPokemon(myNum: Number) {
+    public createPokemon(myNum: Number): void{
         let myPokemon : Pokemon;
         let enemyPokemon : Pokemon;
 
@@ -74,8 +73,6 @@ export class Game {
             mypic.src = "../src/kkobu.webp";
             enempic.src = "../src/pika.webp";
         }
-        this.battleManager.setPokemon(myPokemon, enemyPokemon)
-
         const myhp = document.getElementById("myhp") as HTMLProgressElement;
         const enemyhp = document.getElementById("enemyhp") as HTMLProgressElement;
 
@@ -84,9 +81,16 @@ export class Game {
         enemyhp.max = enemyPokemon.hp
         enemyhp.value = enemyPokemon.hp
 
+        this.battleManager.setPokemon(myPokemon, enemyPokemon)
+
         document.getElementById("ispoke").innerHTML = "";
         const battle = document.getElementById("battlebody");
         const setup = document.getElementById("setupbody");
+
+        document.getElementById("mybattlelog").innerHTML = `win : ${myPokemon.getLog()[0]} // lose : ${myPokemon.getLog()[1]}`
+        document.getElementById("enemybattlelog").innerHTML = `win : ${enemyPokemon.getLog()[0]} // lose : ${enemyPokemon.getLog()[1]}`
+
+
         battle.hidden = false;
         setup.hidden = true;
 

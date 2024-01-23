@@ -1,18 +1,18 @@
+import { battleAction } from "../interface/Type";
 import { Pokemon } from "./Pokemon";
 
-type battleAction = 1 | 2 | 3 | 4 | 5
 
 export class Battle{
     private myPokemon: Pokemon
     private enemyPokemon: Pokemon
     private enemyResult: String;
 
-    setPokemon(myPoke:Pokemon, enemyPoke:Pokemon){
+    setPokemon(myPoke:Pokemon, enemyPoke:Pokemon): void{
         this.myPokemon = myPoke;
         this.enemyPokemon = enemyPoke;
     }
 
-    myAction(myAction: battleAction){
+    myAction(myAction: battleAction): void{
         switch (myAction){
             case 1:
                 this.myPokemon.attack()
@@ -39,7 +39,7 @@ export class Battle{
         this.battleResult(myAction, this.enemyResult)
     }
     
-    private enemyAction(){
+    private enemyAction(): string{
         const probAction = Math.random()
         let actionType: string;
     
@@ -75,27 +75,24 @@ export class Battle{
             actionType = "runaway"
         }
         return actionType;
-        }
+    }
 
-    private battleResult(actionNum:battleAction, enemyAction: String){
+    private battleResult(actionNum:battleAction, enemyAction: String): void{
         const action = actionNum
         const enemyActionType = enemyAction;
         switch (action) {
-            // 내가 attack
             case 1:
                 if(enemyActionType == "attack"){
-                    this.myPokemon.hp -= this.enemyPokemon.dmg
-                    this.enemyPokemon.hp -= this.myPokemon.dmg
+                    this.myPokemon.attacked(this.enemyPokemon.dmg)
+                    this.enemyPokemon.attacked(this.myPokemon.dmg)
                 }
                 else if (enemyActionType == "defend") {
-                    const battleResultValue = this.enemyPokemon.shield - this.myPokemon.dmg;
-                    this.enemyPokemon.hp -= (battleResultValue > 0) ? battleResultValue : -battleResultValue;
+                    this.enemyPokemon.attacked(this.myPokemon.dmg)
                 }
                 else if(enemyActionType == "hide"){
                     if(this.enemyPokemon.hideStatus){
-
                     } else {
-                        this.enemyPokemon.hp -= this.myPokemon.dmg
+                        this.enemyPokemon.attacked(this.myPokemon.dmg)
                     }
                 }
                 else if(enemyActionType == "runaway"){
@@ -103,24 +100,22 @@ export class Battle{
                         this.enemyPokemon.hp = 0
                         break;
                     } else {
-                        this.enemyPokemon.hp -= this.myPokemon.dmg
+                        this.enemyPokemon.attacked(this.myPokemon.dmg)
                     }
                 }
                 break;
             case 2:
                 if(enemyActionType == "attack"){
-                    this.myPokemon.hp -= this.enemyPokemon.dmg
-                    this.enemyPokemon.hp -= this.myPokemon.dmg
+                    this.myPokemon.attacked(this.enemyPokemon.dmg)
+                    this.enemyPokemon.attacked(this.myPokemon.dmg)
                 }
                 else if (enemyActionType == "defend") {
-                    const battleResultValue = this.enemyPokemon.shield - this.myPokemon.dmg;
-                    this.enemyPokemon.hp -= (battleResultValue > 0) ? battleResultValue : -battleResultValue;
+                    this.enemyPokemon.attacked(this.myPokemon.dmg)
                 }
                 else if(enemyActionType == "hide"){
                     if(this.enemyPokemon.hideStatus){
-
                     } else {
-                        this.enemyPokemon.hp -= this.myPokemon.dmg
+                        this.enemyPokemon.attacked(this.myPokemon.dmg)
                     }
                 }
                 else if(enemyActionType == "runaway"){
@@ -128,15 +123,14 @@ export class Battle{
                         this.enemyPokemon.hp = 0
                         break;
                     } else {
-                        this.enemyPokemon.hp -= this.myPokemon.dmg
+                        this.enemyPokemon.attacked(this.myPokemon.dmg)
                     }
                 }
                 break;
             // 내가 방어
             case 3:
                 if(enemyActionType == "attack"){
-                    const battleResultValue = this.myPokemon.shield - this.enemyPokemon.dmg;
-                    this.myPokemon.hp -= (battleResultValue > 0) ? battleResultValue : -battleResultValue;
+                    this.myPokemon.attacked(this.enemyPokemon.dmg)
                 }
                 else if(enemyActionType == "defend"){
                     break;
@@ -162,7 +156,7 @@ export class Battle{
                         }
                 } else {
                     if(enemyActionType == "attack"){
-                        this.myPokemon.hp -= this.enemyPokemon.dmg
+                        this.myPokemon.attacked(this.enemyPokemon.dmg)
                     } else if(enemyActionType == "runaway" && this.enemyPokemon.runStatus){
                         this.enemyPokemon.hp = 0
                             break;
@@ -176,7 +170,7 @@ export class Battle{
                     break;
                 } else {
                     if(enemyActionType == "attack"){
-                        this.myPokemon.hp -= this.enemyPokemon.dmg
+                        this.myPokemon.attacked(this.enemyPokemon.dmg)
                     } else if(enemyActionType == "runaway" && this.enemyPokemon.runStatus){
                         this.enemyPokemon.hp = 0
                             break;
@@ -184,9 +178,11 @@ export class Battle{
                 }
                 break;
             default:
-                console.log("...")
                 break;
         }
+
+        this.myPokemon.initialized()
+        this.enemyPokemon.initialized()
 
         const myPokemonHpBar = document.getElementById("myhp") as HTMLProgressElement;
         const enemyPokemonHpBar = document.getElementById("enemyhp") as HTMLProgressElement;
@@ -196,17 +192,23 @@ export class Battle{
 
         if(this.myPokemon.hp <= 0){
             this.myPokemon.die()
+            this.enemyPokemon.win()
             const selectBox = document.getElementById("actionSelectionBox") as HTMLElement;
             selectBox.hidden = true;
+            document.getElementById("mybattlelog").innerHTML = `win : ${this.myPokemon.getLog()[0]} // lose : ${this.myPokemon.getLog()[1]}`
+            document.getElementById("enemybattlelog").innerHTML = `win : ${this.enemyPokemon.getLog()[0]} // lose : ${this.enemyPokemon.getLog()[1]}`
             document.getElementById("battleprompt").innerHTML = `${this.myPokemon.name}이(가) 쓰러졌다...`;
             document.getElementById("enemybattleprompt").innerHTML = `${this.enemyPokemon.name}이(가) 승리했다!`;
 
         } else if(this.enemyPokemon.hp <= 0) {
             this.enemyPokemon.die()
+            this.myPokemon.win()
             const selectBox = document.getElementById("actionSelectionBox") as HTMLElement;
             selectBox.hidden = true;
+            document.getElementById("mybattlelog").innerHTML = `win : ${this.myPokemon.getLog()[0]} // lose : ${this.myPokemon.getLog()[1]}`
+            document.getElementById("enemybattlelog").innerHTML = `win : ${this.enemyPokemon.getLog()[0]} // lose : ${this.enemyPokemon.getLog()[1]}`
             document.getElementById("battleprompt").innerHTML = `${this.myPokemon.name}이(가) 승리했다!`;
             document.getElementById("enemybattleprompt").innerHTML = `${this.enemyPokemon.name}은 쓰러졌다...`;
         }
-        }
+    }
 }

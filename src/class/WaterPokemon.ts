@@ -7,7 +7,7 @@ export class WaterPokemon extends Pokemon{
         // this.hp = this.hp + 100;
     }
 
-    public specialAttack() {
+    public specialAttack(): void{
         console.log(`${this.name}의 물뿌리기!`);
         this.attack();
         this.dmg += 1;
