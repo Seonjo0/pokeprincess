@@ -21,11 +21,10 @@ export class Battle{
             case 2:
                 this.myPokemon.specialAttack()
                 document.getElementById("battleprompt").innerHTML = `${this.myPokemon.dmg}로 특수 공격한다!`
-                myAction = 1
                 break;
             case 3:
                 this.myPokemon.defend()
-                document.getElementById("battleprompt").innerHTML = `${this.myPokemon.shield}로 특수 공격한다!`
+                document.getElementById("battleprompt").innerHTML = `${this.myPokemon.shield}로 방어한다!`
                 break;
             case 4:
                 this.myPokemon.hide()
@@ -84,6 +83,31 @@ export class Battle{
         switch (action) {
             // 내가 attack
             case 1:
+                if(enemyActionType == "attack"){
+                    this.myPokemon.hp -= this.enemyPokemon.dmg
+                    this.enemyPokemon.hp -= this.myPokemon.dmg
+                }
+                else if (enemyActionType == "defend") {
+                    const battleResultValue = this.enemyPokemon.shield - this.myPokemon.dmg;
+                    this.enemyPokemon.hp -= (battleResultValue > 0) ? battleResultValue : -battleResultValue;
+                }
+                else if(enemyActionType == "hide"){
+                    if(this.enemyPokemon.hideStatus){
+
+                    } else {
+                        this.enemyPokemon.hp -= this.myPokemon.dmg
+                    }
+                }
+                else if(enemyActionType == "runaway"){
+                    if(this.enemyPokemon.runStatus){
+                        this.enemyPokemon.hp = 0
+                        break;
+                    } else {
+                        this.enemyPokemon.hp -= this.myPokemon.dmg
+                    }
+                }
+                break;
+            case 2:
                 if(enemyActionType == "attack"){
                     this.myPokemon.hp -= this.enemyPokemon.dmg
                     this.enemyPokemon.hp -= this.myPokemon.dmg
@@ -168,9 +192,7 @@ export class Battle{
         const enemyPokemonHpBar = document.getElementById("enemyhp") as HTMLProgressElement;
 
         myPokemonHpBar.value = this.myPokemon.hp;
-        console.log("my poke =>", this.myPokemon.hp)
         enemyPokemonHpBar.value = this.enemyPokemon.hp;
-        console.log("enemy poke =>", this.enemyPokemon.hp)
 
         if(this.myPokemon.hp <= 0){
             this.myPokemon.die()
